@@ -2,7 +2,8 @@
 INSERT INTO users (
     username,
     password,
-    account_id
+    account_name,
+    rol
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 ) RETURNING *;

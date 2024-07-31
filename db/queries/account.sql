@@ -4,4 +4,4 @@ INSERT INTO accounts (
     status
 ) VALUES (
     $1, $2
-) RETURNING id;
+) RETURNING name;

@@ -6,12 +6,10 @@ package db
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Account struct {
-	ID        uuid.UUID `json:"id"`
+	ID        int32     `json:"id"`
 	Name      string    `json:"name"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
@@ -19,10 +17,11 @@ type Account struct {
 }
 
 type User struct {
-	ID        int32     `json:"id"`
-	Username  string    `json:"username"`
-	Password  string    `json:"password"`
-	AccountID uuid.UUID `json:"account_id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int32     `json:"id"`
+	Username    string    `json:"username"`
+	Password    string    `json:"password"`
+	Rol         string    `json:"rol"`
+	AccountName string    `json:"account_name"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 const createAccount = `-- name: CreateAccount :one
@@ -17,7 +15,7 @@ INSERT INTO accounts (
     status
 ) VALUES (
     $1, $2
-) RETURNING id
+) RETURNING name
 `
 
 type CreateAccountParams struct {
@@ -25,9 +23,9 @@ type CreateAccountParams struct {
 	Status string `json:"status"`
 }
 
-func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (uuid.UUID, error) {
+func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (string, error) {
 	row := q.db.QueryRowContext(ctx, createAccount, arg.Name, arg.Status)
-	var id uuid.UUID
-	err := row.Scan(&id)
-	return id, err
+	var name string
+	err := row.Scan(&name)
+	return name, err
 }

@@ -4,12 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
 // Create Test account and return id for other test
-func createAcc() (uuid.UUID, error) {
+func createAcc() (string, error) {
 	arg := CreateAccountParams{
 		Name:   randomString(6),
 		Status: "ACTIVE",
@@ -19,7 +18,7 @@ func createAcc() (uuid.UUID, error) {
 }
 
 func TestCreateAccount(t *testing.T) {
-	id, err := createAcc()
+	name, err := createAcc()
 	require.NoError(t, err)
-	require.NotEmpty(t, id)
+	require.NotEmpty(t, name)
 }
