@@ -7,7 +7,51 @@ package db
 
 import (
 	"context"
+	"time"
 )
+
+const changePassword = `-- name: ChangePassword :exec
+UPDATE users
+SET password = $1, updated_at = (now())
+WHERE account_name = $2 AND id = $3
+`
+
+type ChangePasswordParams struct {
+	Password    string `json:"password"`
+	AccountName string `json:"account_name"`
+	ID          int32  `json:"id"`
+}
+
+func (q *Queries) ChangePassword(ctx context.Context, arg ChangePasswordParams) error {
+	_, err := q.db.ExecContext(ctx, changePassword, arg.Password, arg.AccountName, arg.ID)
+	return err
+}
+
+const changeRol = `-- name: ChangeRol :one
+UPDATE users
+SET rol = $1, updated_at =  (now())
+WHERE account_name = $2 AND id = $3
+RETURNING username, rol, account_name
+`
+
+type ChangeRolParams struct {
+	Rol         string `json:"rol"`
+	AccountName string `json:"account_name"`
+	ID          int32  `json:"id"`
+}
+
+type ChangeRolRow struct {
+	Username    string `json:"username"`
+	Rol         string `json:"rol"`
+	AccountName string `json:"account_name"`
+}
+
+func (q *Queries) ChangeRol(ctx context.Context, arg ChangeRolParams) (ChangeRolRow, error) {
+	row := q.db.QueryRowContext(ctx, changeRol, arg.Rol, arg.AccountName, arg.ID)
+	var i ChangeRolRow
+	err := row.Scan(&i.Username, &i.Rol, &i.AccountName)
+	return i, err
+}
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
@@ -41,6 +85,39 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Password,
 		&i.Rol,
 		&i.AccountName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUser = `-- name: GetUser :one
+SELECT username, account_name, rol, created_at, updated_at
+FROM users
+WHERE account_name = $1 AND id = $2
+LIMIT 1
+`
+
+type GetUserParams struct {
+	AccountName string `json:"account_name"`
+	ID          int32  `json:"id"`
+}
+
+type GetUserRow struct {
+	Username    string    `json:"username"`
+	AccountName string    `json:"account_name"`
+	Rol         string    `json:"rol"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+func (q *Queries) GetUser(ctx context.Context, arg GetUserParams) (GetUserRow, error) {
+	row := q.db.QueryRowContext(ctx, getUser, arg.AccountName, arg.ID)
+	var i GetUserRow
+	err := row.Scan(
+		&i.Username,
+		&i.AccountName,
+		&i.Rol,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
