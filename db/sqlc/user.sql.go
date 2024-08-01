@@ -61,7 +61,7 @@ INSERT INTO users (
     rol
 ) VALUES (
     $1, $2, $3, $4
-) RETURNING id, username, password, rol, account_name, created_at, updated_at
+) RETURNING id, account_name, username, password, rol, is_active, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -81,20 +81,37 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.AccountName,
 		&i.Username,
 		&i.Password,
 		&i.Rol,
-		&i.AccountName,
+		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
+const deleteUser = `-- name: DeleteUser :exec
+UPDATE users
+SET is_active = false, updated_at = (now())
+WHERE account_name = $1 AND id = $2
+`
+
+type DeleteUserParams struct {
+	AccountName string `json:"account_name"`
+	ID          int32  `json:"id"`
+}
+
+func (q *Queries) DeleteUser(ctx context.Context, arg DeleteUserParams) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, arg.AccountName, arg.ID)
+	return err
+}
+
 const getUser = `-- name: GetUser :one
 SELECT username, account_name, rol, created_at, updated_at
 FROM users
-WHERE account_name = $1 AND id = $2
+WHERE account_name = $1 AND id = $2 AND is_active = true
 LIMIT 1
 `
 

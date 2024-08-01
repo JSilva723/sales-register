@@ -89,3 +89,20 @@ func TestChangeRol(t *testing.T) {
 
 	require.NotEqual(t, userFounded.CreatedAt, userFounded.UpdatedAt)
 }
+
+func TestDeleteUser(t *testing.T) {
+	_, user, _ := createRandomUser()
+
+	err := testQueries.DeleteUser(context.Background(), DeleteUserParams{
+		ID:          user.ID,
+		AccountName: user.AccountName,
+	})
+	require.NoError(t, err)
+
+	userFounded, err := testQueries.GetUser(context.Background(), GetUserParams{
+		ID:          user.ID,
+		AccountName: user.AccountName,
+	})
+	require.Error(t, err)
+	require.Empty(t, userFounded)
+}

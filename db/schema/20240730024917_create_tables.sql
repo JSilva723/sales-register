@@ -8,10 +8,11 @@ CREATE TABLE accounts (
 );
 CREATE TABLE users (
     id serial PRIMARY KEY,
+    account_name varchar NOT NULL,
     username varchar NOT NULL,
     password varchar NOT NULL,
     rol varchar NOT NULL CHECK (rol IN ('ADMIN', 'EMPLOYEE')),
-    account_name varchar NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
     created_at timestamptz NOT NULL DEFAULT (now()),
     updated_at timestamptz NOT NULL DEFAULT (now())
 );
@@ -23,5 +24,6 @@ COMMIT;
 -- +goose StatementBegin
 BEGIN;
 DROP TABLE IF EXISTS accounts;
+DROP TABLE IF EXISTS users;
 COMMIT;
 -- +goose StatementEnd

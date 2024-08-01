@@ -11,7 +11,7 @@ INSERT INTO users (
 -- name: GetUser :one
 SELECT username, account_name, rol, created_at, updated_at
 FROM users
-WHERE account_name = $1 AND id = $2
+WHERE account_name = $1 AND id = $2 AND is_active = true
 LIMIT 1;
 
 -- name: ChangePassword :exec
@@ -24,3 +24,8 @@ UPDATE users
 SET rol = $1, updated_at =  (now())
 WHERE account_name = $2 AND id = $3
 RETURNING username, rol, account_name;
+
+-- name: DeleteUser :exec
+UPDATE users
+SET is_active = false, updated_at = (now())
+WHERE account_name = $1 AND id = $2;

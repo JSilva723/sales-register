@@ -16,10 +16,11 @@ type Account struct {
 
 type User struct {
 	ID          int32     `json:"id"`
+	AccountName string    `json:"account_name"`
 	Username    string    `json:"username"`
 	Password    string    `json:"password"`
 	Rol         string    `json:"rol"`
-	AccountName string    `json:"account_name"`
+	IsActive    bool      `json:"is_active"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
