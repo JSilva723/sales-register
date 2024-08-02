@@ -14,6 +14,14 @@ type Account struct {
 	Status string `json:"status"`
 }
 
+type OrderLine struct {
+	ID          int64  `json:"id"`
+	AccountName string `json:"account_name"`
+	SaleID      int32  `json:"sale_id"`
+	Ammount     int32  `json:"ammount"`
+	ProductID   int32  `json:"product_id"`
+}
+
 type Payment struct {
 	ID          int32     `json:"id"`
 	AccountName string    `json:"account_name"`
@@ -30,6 +38,14 @@ type Product struct {
 	IsActive    bool      `json:"is_active"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type SaleOrder struct {
+	ID          int32     `json:"id"`
+	AccountName string    `json:"account_name"`
+	UserID      int32     `json:"user_id"`
+	PaymentID   int32     `json:"payment_id"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type User struct {
