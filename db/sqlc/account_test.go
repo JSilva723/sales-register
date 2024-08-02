@@ -7,18 +7,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Create Test account and return id for other test
-func createAcc() (string, error) {
+func createRandomAccount(t *testing.T) string {
 	arg := CreateAccountParams{
+		ID:     RandomInt(0, 10000),
 		Name:   randomString(6),
 		Status: "ACTIVE",
 	}
 
-	return testQueries.CreateAccount(context.Background(), arg)
+	name, err := testQueries.CreateAccount(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, name)
+
+	return name
 }
 
 func TestCreateAccount(t *testing.T) {
-	name, err := createAcc()
-	require.NoError(t, err)
-	require.NotEmpty(t, name)
+	createRandomAccount(t)
 }

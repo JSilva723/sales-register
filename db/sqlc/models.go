@@ -14,6 +14,24 @@ type Account struct {
 	Status string `json:"status"`
 }
 
+type Payment struct {
+	ID          int32     `json:"id"`
+	AccountName string    `json:"account_name"`
+	Name        string    `json:"name"`
+	IsActive    bool      `json:"is_active"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type Product struct {
+	ID          int32     `json:"id"`
+	AccountName string    `json:"account_name"`
+	Name        string    `json:"name"`
+	IsActive    bool      `json:"is_active"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 type User struct {
 	ID          int32     `json:"id"`
 	AccountName string    `json:"account_name"`

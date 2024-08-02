@@ -44,3 +44,8 @@ func randomString(n int) string {
 
 	return sb.String()
 }
+
+// RandomInt generate a random integer between min and max
+func RandomInt(min, max int32) int32 {
+	return min + rand.Int31n(max-min+1)
+}

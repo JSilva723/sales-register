@@ -13,43 +13,40 @@ import (
 const changePassword = `-- name: ChangePassword :exec
 UPDATE users
 SET password = $1, updated_at = (now())
-WHERE account_name = $2 AND id = $3
+WHERE id = $2
 `
 
 type ChangePasswordParams struct {
-	Password    string `json:"password"`
-	AccountName string `json:"account_name"`
-	ID          int32  `json:"id"`
+	Password string `json:"password"`
+	ID       int32  `json:"id"`
 }
 
 func (q *Queries) ChangePassword(ctx context.Context, arg ChangePasswordParams) error {
-	_, err := q.db.ExecContext(ctx, changePassword, arg.Password, arg.AccountName, arg.ID)
+	_, err := q.db.ExecContext(ctx, changePassword, arg.Password, arg.ID)
 	return err
 }
 
 const changeRol = `-- name: ChangeRol :one
 UPDATE users
 SET rol = $1, updated_at =  (now())
-WHERE account_name = $2 AND id = $3
-RETURNING username, rol, account_name
+WHERE id = $2
+RETURNING username, rol
 `
 
 type ChangeRolParams struct {
-	Rol         string `json:"rol"`
-	AccountName string `json:"account_name"`
-	ID          int32  `json:"id"`
+	Rol string `json:"rol"`
+	ID  int32  `json:"id"`
 }
 
 type ChangeRolRow struct {
-	Username    string `json:"username"`
-	Rol         string `json:"rol"`
-	AccountName string `json:"account_name"`
+	Username string `json:"username"`
+	Rol      string `json:"rol"`
 }
 
 func (q *Queries) ChangeRol(ctx context.Context, arg ChangeRolParams) (ChangeRolRow, error) {
-	row := q.db.QueryRowContext(ctx, changeRol, arg.Rol, arg.AccountName, arg.ID)
+	row := q.db.QueryRowContext(ctx, changeRol, arg.Rol, arg.ID)
 	var i ChangeRolRow
-	err := row.Scan(&i.Username, &i.Rol, &i.AccountName)
+	err := row.Scan(&i.Username, &i.Rol)
 	return i, err
 }
 
@@ -95,48 +92,79 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 const deleteUser = `-- name: DeleteUser :exec
 UPDATE users
 SET is_active = false, updated_at = (now())
-WHERE account_name = $1 AND id = $2
+WHERE id = $1
 `
 
-type DeleteUserParams struct {
-	AccountName string `json:"account_name"`
-	ID          int32  `json:"id"`
-}
-
-func (q *Queries) DeleteUser(ctx context.Context, arg DeleteUserParams) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, arg.AccountName, arg.ID)
+func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT username, account_name, rol, created_at, updated_at
+SELECT username, rol, created_at, updated_at
 FROM users
-WHERE account_name = $1 AND id = $2 AND is_active = true
+WHERE id = $1 AND is_active = true
 LIMIT 1
 `
 
-type GetUserParams struct {
-	AccountName string `json:"account_name"`
-	ID          int32  `json:"id"`
-}
-
 type GetUserRow struct {
-	Username    string    `json:"username"`
-	AccountName string    `json:"account_name"`
-	Rol         string    `json:"rol"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Username  string    `json:"username"`
+	Rol       string    `json:"rol"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (q *Queries) GetUser(ctx context.Context, arg GetUserParams) (GetUserRow, error) {
-	row := q.db.QueryRowContext(ctx, getUser, arg.AccountName, arg.ID)
+func (q *Queries) GetUser(ctx context.Context, id int32) (GetUserRow, error) {
+	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i GetUserRow
 	err := row.Scan(
 		&i.Username,
-		&i.AccountName,
 		&i.Rol,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getUsers = `-- name: GetUsers :many
+SELECT id, username, rol
+FROM users
+WHERE account_name = $1 AND is_active = true
+LIMIT $2
+OFFSET $3
+`
+
+type GetUsersParams struct {
+	AccountName string `json:"account_name"`
+	Limit       int32  `json:"limit"`
+	Offset      int32  `json:"offset"`
+}
+
+type GetUsersRow struct {
+	ID       int32  `json:"id"`
+	Username string `json:"username"`
+	Rol      string `json:"rol"`
+}
+
+func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]GetUsersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUsers, arg.AccountName, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersRow
+	for rows.Next() {
+		var i GetUsersRow
+		if err := rows.Scan(&i.ID, &i.Username, &i.Rol); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
