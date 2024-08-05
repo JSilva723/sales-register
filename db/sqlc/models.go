@@ -17,7 +17,7 @@ type Account struct {
 type OrderLine struct {
 	ID          int64  `json:"id"`
 	AccountName string `json:"account_name"`
-	SaleID      int32  `json:"sale_id"`
+	SaleOrderID int32  `json:"sale_order_id"`
 	Ammount     int32  `json:"ammount"`
 	ProductID   int32  `json:"product_id"`
 }

@@ -13,7 +13,7 @@ func createRandomOrderLine(t *testing.T, accountName string) {
 
 	arg := CreateOrderLineParams{
 		AccountName: accountName,
-		SaleID:      saleOrderID,
+		SaleOrderID: saleOrderID,
 		Ammount:     RandomInt(0, 1000),
 		ProductID:   productRow.ID,
 	}

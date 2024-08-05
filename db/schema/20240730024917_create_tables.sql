@@ -48,11 +48,11 @@ CREATE TABLE sale_orders (
 CREATE TABLE order_lines (
     id bigserial PRIMARY KEY,
     account_name varchar NOT NULL,
-    sale_id int NOT NULL,
+    sale_order_id int NOT NULL,
     ammount int NOT NULL,
     product_id int NOT NULL,
     FOREIGN KEY (account_name) REFERENCES accounts (name),
-    FOREIGN KEY (sale_id) REFERENCES sale_orders (id),
+    FOREIGN KEY (sale_order_id) REFERENCES sale_orders (id),
     FOREIGN KEY (product_id) REFERENCES products (id)
 );
 COMMIT;

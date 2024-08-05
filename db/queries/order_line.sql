@@ -1,7 +1,7 @@
 -- name: CreateOrderLine :exec
 INSERT INTO order_lines (
     account_name,
-    sale_id,
+    sale_order_id,
     ammount,
     product_id
 ) VALUES (

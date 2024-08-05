@@ -12,7 +12,7 @@ import (
 const createOrderLine = `-- name: CreateOrderLine :exec
 INSERT INTO order_lines (
     account_name,
-    sale_id,
+    sale_order_id,
     ammount,
     product_id
 ) VALUES (
@@ -22,7 +22,7 @@ INSERT INTO order_lines (
 
 type CreateOrderLineParams struct {
 	AccountName string `json:"account_name"`
-	SaleID      int32  `json:"sale_id"`
+	SaleOrderID int32  `json:"sale_order_id"`
 	Ammount     int32  `json:"ammount"`
 	ProductID   int32  `json:"product_id"`
 }
@@ -30,7 +30,7 @@ type CreateOrderLineParams struct {
 func (q *Queries) CreateOrderLine(ctx context.Context, arg CreateOrderLineParams) error {
 	_, err := q.db.ExecContext(ctx, createOrderLine,
 		arg.AccountName,
-		arg.SaleID,
+		arg.SaleOrderID,
 		arg.Ammount,
 		arg.ProductID,
 	)
