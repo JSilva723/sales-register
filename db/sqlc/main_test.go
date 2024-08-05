@@ -19,7 +19,7 @@ func TestMain(m *testing.M) {
 
 	testDB, err = sql.Open(
 		"postgres",
-		"postgres://salesregister:salesregister@localhost/salesregister?sslmode=disable",
+		"postgres://salesregister:salesregister@localhost:5433/salesregister?sslmode=disable",
 	)
 	if err != nil {
 		log.Fatal("error connet to db: ", err)

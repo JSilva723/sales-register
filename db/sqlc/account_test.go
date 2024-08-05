@@ -9,9 +9,8 @@ import (
 
 func createRandomAccount(t *testing.T) string {
 	arg := CreateAccountParams{
-		ID:     RandomInt(0, 10000),
-		Name:   randomString(6),
-		Status: "ACTIVE",
+		ID:   RandomInt(0, 10000),
+		Name: randomString(6),
 	}
 
 	name, err := testQueries.CreateAccount(context.Background(), arg)

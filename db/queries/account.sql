@@ -1,8 +1,7 @@
 -- name: CreateAccount :one
 INSERT INTO accounts (
     id,
-    name,
-    status
+    name
 ) VALUES (
-    $1, $2, $3
+    $1, $2
 ) RETURNING name;

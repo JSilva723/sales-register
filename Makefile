@@ -6,29 +6,29 @@ endif
 run: build
 	@./bin/a
 
-build: fmt
+build:
 	@go build -o ./bin/a ./main.go
 
-goose-create: ## Create migrarion file .Args name="create_user_table"
+db-up:
+	@docker compose up db -d
+
+db-down:
+	@docker compose down db
+
+db-ssh:
+	@docker exec -it db-sales-register bash
+
+goose-create:
 	@goose -dir ./db/schema create ${name} sql
 
-goose-up: ## Up migration
+goose-up:
 	@goose -dir ./db/schema postgres ${DATABASE_URL} up
 
-goose-down: ## Down migration
+goose-down:
 	@goose -dir ./db/schema postgres ${DATABASE_URL} down
 
-sqlc-generate: ## Generate db functions
+sqlc-generate:
 	@sqlc generate
 
-db-test-up:
-	@docker compose up db-test -d
-
-db-test-down:
-	@docker compose down db-test
-
-db-test-ssh:
-	@docker exec -it db-sales-register-test bash
-
 test:
-	@go test -v -cover ./...
+	@bash script/test.sh

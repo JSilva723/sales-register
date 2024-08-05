@@ -1,8 +1,8 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
+	"sales-register/internal/handler"
 )
 
 type ServerCfg struct {
@@ -20,9 +20,8 @@ func NewServer(cfg ServerCfg) *Server {
 }
 
 func (s *Server) Start() error {
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "ok")
-	})
+	http.HandleFunc("GET /health", handler.Health)
+	http.HandleFunc("POST /account", handler.Account)
 
 	return http.ListenAndServe(s.Port, nil)
 }

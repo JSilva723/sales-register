@@ -4,7 +4,8 @@ BEGIN;
 CREATE TABLE accounts (
     id int PRIMARY KEY,
     name varchar NOT NULL UNIQUE,
-    status varchar NOT NULL CHECK (status IN ('ACTIVE', 'INACTIVE'))
+    status varchar NOT NULL DEFAULT 'ACTIVE',
+    CONSTRAINT validate_status CHECK(status IN ('ACTIVE', 'INACTIVE'))
 );
 CREATE TABLE users (
     id serial PRIMARY KEY,
