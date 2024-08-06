@@ -58,7 +58,7 @@ INSERT INTO users (
     rol
 ) VALUES (
     $1, $2, $3, $4
-) RETURNING id, account_name, username, password, rol, is_active, created_at, updated_at
+) RETURNING id, account_name, username, rol, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -68,21 +68,28 @@ type CreateUserParams struct {
 	Rol         string `json:"rol"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+type CreateUserRow struct {
+	ID          int32     `json:"id"`
+	AccountName string    `json:"account_name"`
+	Username    string    `json:"username"`
+	Rol         string    `json:"rol"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Username,
 		arg.Password,
 		arg.AccountName,
 		arg.Rol,
 	)
-	var i User
+	var i CreateUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.AccountName,
 		&i.Username,
-		&i.Password,
 		&i.Rol,
-		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

@@ -1,12 +1,15 @@
 package server
 
 import (
+	"context"
 	"net/http"
+	db "sales-register/db/sqlc"
 	"sales-register/internal/handler"
 )
 
 type ServerCfg struct {
-	Port string
+	Port    string
+	Queries *db.Queries
 }
 
 type Server struct {
@@ -19,9 +22,9 @@ func NewServer(cfg ServerCfg) *Server {
 	}
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(ctx context.Context) error {
 	http.HandleFunc("GET /health", handler.Health)
-	http.HandleFunc("POST /account", handler.Account)
+	http.HandleFunc("POST /account", handler.Account(ctx, s.Queries))
 
 	return http.ListenAndServe(s.Port, nil)
 }
